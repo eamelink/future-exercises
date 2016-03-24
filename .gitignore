@@ -1,2 +1,15 @@
 .cache-main
 .cache-tests
+logs
+target
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
+activator
+activator-launch-1.3.5.jar
+activator.bat
+LICENSE
+.DS_Store
