@@ -13,7 +13,7 @@ object Part01 {
   /**
    * Example: Create a future that contains the value 5.
    */
-  def exercise1: Future[Int] = Future.successful { 5 }
+  def exercise1: Future[Int] = Future(5)
 
   /**
    * Exercise: Create a future that runs `expensiveComputation`
@@ -21,7 +21,7 @@ object Part01 {
    *
    * NOTE: This is not what you'd normally want in an application!
    */
-  def exercise2: Future[Int] = ???
+  def exercise2: Future[Int] = Future.successful(expensiveComputation)
 
   /**
    * Exercise: Create a future that runs `expensiveComputation`
@@ -29,7 +29,9 @@ object Part01 {
    *
    * Note: This is what you'd normally want.
    */
-  def exercise3: Future[Int] = ???
+  def exercise3: Future[Int] = Future{
+    expensiveComputation
+  }
 
   /**
    * Exercise: Return the product of the values in the futures
@@ -41,24 +43,43 @@ object Part01 {
    * - What happens if you use only `map`?
    * - What happens if you use only `flatMap`?
    */
-  def exercise4: Future[Int] = ???
+  def exercise4: Future[Int] = getX.flatMap{ x=>
+    getY.map{y => x*y}
+  }
+
 
   /**
    * Exercise: Same as exercise4, but use a for-comprehension.
    */
-  def exercise5: Future[Int] = ???
+  def exercise5: Future[Int] = for {
+    x <- getX
+    y <- getY
+  } yield x*y
 
   /**
    * Exercise: Same as exercise4, with `map` and `flatMap`,
    * but, since they are independent, make sure they execute
    * in parallel.
    */
-  def exercise6: Future[Int] = ???
+  def exercise6: Future[Int] = {
+    val x= getX
+    val y = getY
+    x.flatMap { x =>
+      y.map { y => x * y}
+    }
+  }
 
   /**
    * Exercise: Same as exercise6, but with a for-comprehension.
    */
-  def exercise7: Future[Int] = ???
+  def exercise7: Future[Int] = {
+    val xF= getX
+    val yF = getY
+    for {
+      x <- xF
+      y <- yF
+    } yield x*y
+  }
 
   /**
    * To express intent (parallelism) better, we
@@ -97,7 +118,13 @@ object Part01 {
    * def getAddress(user: User): Future[Address]
    * def getCreditRating(user: User, accounts: Seq[Account], address: Address)
    */
-  def exercise10(userId: String): Future[CreditRating] = ???
+  def exercise10(userId: String): Future[CreditRating] = {
+    for{
+      user<-getUser(userId)
+      (accounts,addresses) <- (getAccounts(user) |@| getAddress(user)).tupled
+      creditRating <-getCreditRating(user, accounts, addresses)
+    } yield creditRating
+  }
 
   //
   // Methods that the exercises use
